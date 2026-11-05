@@ -5,9 +5,10 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   plugins: [react()],
   test: {
-    // Le moteur ne dépend pas du DOM : les tests tournent sous Node, sans jsdom.
+    // Le moteur ne dépend pas du DOM : les tests tournent sous Node. Les tests de l'interface
+    // choisissent jsdom avec le commentaire `@vitest-environment jsdom`.
     environment: 'node',
-    include: ['tests/**/*.test.js'],
+    include: ['tests/**/*.test.{js,jsx}'],
     coverage: {
       provider: 'v8',
       include: ['src/engine/**/*.js'],

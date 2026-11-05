@@ -79,6 +79,13 @@ export default defineConfig([
     languageOptions: { globals: globals.node },
   },
 
+  // Tests de l'interface, exécutés dans jsdom.
+  {
+    files: ['tests/ui/**/*.{js,jsx}'],
+    extends: [reactHooks.configs.flat.recommended],
+    languageOptions: { globals: { ...globals.browser, ...globals.node } },
+  },
+
   // Désactive les règles de style qui entreraient en conflit avec Prettier.
   prettier,
 ]);
