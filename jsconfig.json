@@ -10,7 +10,8 @@
     "strict": true,
     "noEmit": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "maxNodeModuleJsDepth": 0
   },
-  "include": ["src/engine/**/*.js", "src/data/**/*.js"]
+  "include": ["src/engine/**/*.js", "src/engine/**/*.d.ts", "src/data/**/*.js"]
 }
