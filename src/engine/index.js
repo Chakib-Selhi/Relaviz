@@ -41,6 +41,7 @@ export { compareResults, loadSqlJs, verifyWithSql } from './sql-oracle.js';
  * @property {false} ok
  * @property {'syntax' | 'schema'} stage étape qui a échoué
  * @property {ErrorInfo} error
+ * @property {Program} [program] arbre analysé, présent si l'erreur est une erreur de schéma
  */
 
 /**
@@ -58,7 +59,12 @@ export function analyze(text, database) {
     checked = checkProgram(parsed.program, database);
   } catch (error) {
     if (error instanceof RelaVizError) {
-      return { ok: false, stage: 'schema', error: toErrorInfo(error, text) };
+      return {
+        ok: false,
+        stage: 'schema',
+        error: toErrorInfo(error, text),
+        program: parsed.program,
+      };
     }
     throw error;
   }
