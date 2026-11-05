@@ -1,0 +1,100 @@
+{
+  "id": "bibliotheque",
+  "name": "Bibliothèque",
+  "description": "Livres, auteurs, membres et emprunts d'une bibliothèque de quartier.",
+  "relations": [
+    {
+      "name": "Auteur",
+      "attributes": [
+        { "name": "idAuteur", "type": "number" },
+        { "name": "nom", "type": "text" },
+        { "name": "prenom", "type": "text" },
+        { "name": "pays", "type": "text" },
+        { "name": "anneeNaissance", "type": "number" }
+      ],
+      "tuples": [
+        [1, "Tremblay", "Camille", "Canada", 1962],
+        [2, "Gagnon", "Louis", "Canada", 1948],
+        [3, "Morel", "Aline", "France", 1975],
+        [4, "Diallo", "Moussa", "Sénégal", 1981],
+        [5, "Lefebvre", "Hélène", "Belgique", 1955],
+        [6, "Benali", "Yasmine", "Maroc", 1990],
+        [7, "Roy", "Gabriel", null, 1969],
+        [8, "Nakamura", "Ken", "Japon", 1978]
+      ]
+    },
+    {
+      "name": "Livre",
+      "attributes": [
+        { "name": "idLivre", "type": "number" },
+        { "name": "titre", "type": "text" },
+        { "name": "idAuteur", "type": "number" },
+        { "name": "annee", "type": "number" },
+        { "name": "genre", "type": "text" }
+      ],
+      "tuples": [
+        [1, "Les Saisons du fleuve", 1, 1998, "Roman"],
+        [2, "Hiver boréal", 1, 2021, "Roman"],
+        [3, "Histoire du rail québécois", 2, 1987, "Histoire"],
+        [4, "La Cartographe", 3, 2012, "Roman"],
+        [5, "Le Jardin de verre", 3, 2018, "Poésie"],
+        [6, "Fragments de lumière", 3, 2022, "Poésie"],
+        [7, "Les Routes du Sahel", 4, 2016, "Récit"],
+        [8, "Algorithmes en douceur", 5, 2020, "Informatique"],
+        [9, "Bases de données pour tous", 5, 2023, "Informatique"],
+        [10, "Le Souffle de l'Atlas", 6, 2024, "Roman"],
+        [11, "Contes anciens de la vallée", null, null, "Conte"],
+        [12, "Mémoires d'un détective", 7, 2005, "Policier"],
+        [13, "Le Dernier Quai", 7, null, "Policier"]
+      ]
+    },
+    {
+      "name": "Membre",
+      "attributes": [
+        { "name": "idMembre", "type": "number" },
+        { "name": "nom", "type": "text" },
+        { "name": "prenom", "type": "text" },
+        { "name": "ville", "type": "text" },
+        { "name": "dateInscription", "type": "date" }
+      ],
+      "tuples": [
+        [1, "Bouchard", "Julie", "Montréal", "2021-09-01"],
+        [2, "Nguyen", "Minh", "Laval", "2022-01-15"],
+        [3, "Côté", "Samuel", "Longueuil", "2020-05-20"],
+        [4, "Ouellet", "Sarah", "Montréal", "2023-03-10"],
+        [5, "Haddad", "Karim", null, "2024-02-02"],
+        [6, "Morel", "Aline", "Québec", "2019-11-30"],
+        [7, "Lavoie", "Émile", "Sherbrooke", "2025-08-18"]
+      ]
+    },
+    {
+      "name": "Emprunt",
+      "attributes": [
+        { "name": "idMembre", "type": "number" },
+        { "name": "idLivre", "type": "number" },
+        { "name": "dateEmprunt", "type": "date" },
+        { "name": "dateRetour", "type": "date" }
+      ],
+      "tuples": [
+        [1, 1, "2025-01-10", "2025-01-24"],
+        [1, 8, "2025-02-03", "2025-02-20"],
+        [1, 1, "2025-06-01", "2025-06-15"],
+        [2, 4, "2025-01-05", "2025-01-19"],
+        [2, 5, "2025-02-11", "2025-02-25"],
+        [2, 6, "2025-03-02", "2025-03-16"],
+        [2, 9, "2025-09-01", null],
+        [3, 3, "2024-11-12", "2024-12-01"],
+        [3, 4, "2025-04-04", "2025-04-20"],
+        [3, 12, "2025-10-10", null],
+        [4, 2, "2025-05-05", "2025-05-19"],
+        [4, 10, "2025-10-01", null],
+        [5, 4, "2025-03-15", "2025-03-29"],
+        [5, 5, "2025-04-01", "2025-04-14"],
+        [5, 6, "2025-05-20", "2025-06-03"],
+        [5, 7, "2025-07-07", null],
+        [6, 6, "2025-08-08", "2025-08-22"],
+        [6, 11, "2025-09-09", null]
+      ]
+    }
+  ]
+}

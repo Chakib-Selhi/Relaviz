@@ -1,0 +1,97 @@
+{
+  "id": "universite",
+  "name": "Université",
+  "description": "Étudiants, cours, inscriptions et professeurs d'une faculté. Exemple classique pour la division.",
+  "relations": [
+    {
+      "name": "Etudiant",
+      "attributes": [
+        { "name": "matricule", "type": "number" },
+        { "name": "nom", "type": "text" },
+        { "name": "prenom", "type": "text" },
+        { "name": "programme", "type": "text" },
+        { "name": "anneeAdmission", "type": "number" }
+      ],
+      "tuples": [
+        [1001, "Lambert", "Chloé", "Génie logiciel", 2023],
+        [1002, "Dubois", "Mathis", "Génie logiciel", 2024],
+        [1003, "Fortin", "Marc", "Informatique", 2022],
+        [1004, "Khalil", "Rania", "Génie logiciel", 2023],
+        [1005, "Poirier", "Léa", "Informatique", 2025],
+        [1006, "Mercier", "Thomas", "Mathématiques", 2024],
+        [1007, "Gauthier", "Inès", null, 2025],
+        [1008, "Caron", "William", "Génie logiciel", 2022]
+      ]
+    },
+    {
+      "name": "Cours",
+      "attributes": [
+        { "name": "sigle", "type": "text" },
+        { "name": "titre", "type": "text" },
+        { "name": "credits", "type": "number" },
+        { "name": "programme", "type": "text" },
+        { "name": "idProf", "type": "number" }
+      ],
+      "tuples": [
+        ["PRG101", "Programmation I", 3, "Informatique", 1],
+        ["PRG201", "Programmation II", 3, "Informatique", 1],
+        ["BDD301", "Bases de données", 3, "Informatique", 2],
+        ["GLO401", "Analyse et modélisation", 3, "Génie logiciel", 4],
+        ["GLO402", "Conception logicielle", 3, "Génie logiciel", 3],
+        ["GLO403", "Gestion de projets logiciels", 3, "Génie logiciel", 3],
+        ["MAT110", "Mathématiques discrètes", 4, "Mathématiques", 5],
+        ["STA220", "Méthodes statistiques", 3, "Mathématiques", null]
+      ]
+    },
+    {
+      "name": "Inscription",
+      "attributes": [
+        { "name": "matricule", "type": "number" },
+        { "name": "sigle", "type": "text" },
+        { "name": "session", "type": "text" },
+        { "name": "note", "type": "number" }
+      ],
+      "tuples": [
+        [1001, "PRG101", "A2023", 82],
+        [1001, "GLO401", "H2024", 88],
+        [1001, "GLO402", "A2024", 91],
+        [1001, "GLO403", "A2026", null],
+        [1002, "PRG101", "A2024", 75],
+        [1002, "GLO401", "H2025", 68],
+        [1003, "PRG101", "A2022", 90],
+        [1003, "PRG201", "H2023", 85],
+        [1003, "BDD301", "A2023", 93],
+        [1004, "GLO401", "A2023", 79],
+        [1004, "GLO402", "H2024", 84],
+        [1004, "GLO403", "A2024", 87],
+        [1004, "BDD301", "A2026", null],
+        [1005, "PRG101", "A2026", null],
+        [1006, "MAT110", "A2024", 72],
+        [1006, "STA220", "H2025", 58],
+        [1007, "MAT110", "A2026", null],
+        [1008, "PRG101", "A2022", 80],
+        [1008, "GLO401", "A2022", 55],
+        [1008, "GLO401", "H2023", 77],
+        [1008, "GLO403", "H2023", 71]
+      ]
+    },
+    {
+      "name": "Professeur",
+      "attributes": [
+        { "name": "idProf", "type": "number" },
+        { "name": "nom", "type": "text" },
+        { "name": "prenom", "type": "text" },
+        { "name": "departement", "type": "text" },
+        { "name": "bureau", "type": "text" }
+      ],
+      "tuples": [
+        [1, "Fortin", "Marc", "Informatique", "B-210"],
+        [2, "Pelletier", "Nadia", "Informatique", "B-245"],
+        [3, "Girard", "Olivier", "Génie logiciel", null],
+        [4, "Bergeron", "Isabelle", "Génie logiciel", "C-112"],
+        [5, "Simard", "Antoine", "Mathématiques", "D-330"],
+        [6, "Leclerc", "Sophie", "Mathématiques", "D-341"]
+      ]
+    }
+  ]
+}

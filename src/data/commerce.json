@@ -1,0 +1,96 @@
+{
+  "id": "commerce",
+  "name": "Commerce",
+  "description": "Clients, produits, commandes et lignes de commande d'un petit commerce en ligne.",
+  "relations": [
+    {
+      "name": "Client",
+      "attributes": [
+        { "name": "idClient", "type": "number" },
+        { "name": "nom", "type": "text" },
+        { "name": "ville", "type": "text" },
+        { "name": "courriel", "type": "text" }
+      ],
+      "tuples": [
+        [1, "Librairie Saint-Denis", "Montréal", "contact@librairie-sd.example"],
+        [2, "Café Brossard", "Brossard", "bonjour@cafe-brossard.example"],
+        [3, "Atelier Nordik", "Québec", null],
+        [4, "Martin Pelletier", "Laval", "martin.p@courriel.example"],
+        [5, "École Les Érables", "Longueuil", "admin@les-erables.example"],
+        [6, "Studio Pixel", null, "info@studiopixel.example"],
+        [7, "Amélie Fortier", "Montréal", "amelie.f@courriel.example"]
+      ]
+    },
+    {
+      "name": "Produit",
+      "attributes": [
+        { "name": "idProduit", "type": "number" },
+        { "name": "nom", "type": "text" },
+        { "name": "categorie", "type": "text" },
+        { "name": "prix", "type": "number" }
+      ],
+      "tuples": [
+        [1, "Cahier ligné", "Papeterie", 3.49],
+        [2, "Stylo gel noir", "Papeterie", 1.99],
+        [3, "Surligneur jaune", "Papeterie", 2.25],
+        [4, "Clavier sans fil", "Informatique", 49.99],
+        [5, "Souris ergonomique", "Informatique", 34.5],
+        [6, "Écran 24 pouces", "Informatique", 189.99],
+        [7, "Café moulu 1 kg", "Alimentation", 18.75],
+        [8, "Thé vert bio", "Alimentation", 9.95],
+        [9, "Lampe de bureau", "Mobilier", null],
+        [10, "Chaise de bureau", "Mobilier", 249]
+      ]
+    },
+    {
+      "name": "Commande",
+      "attributes": [
+        { "name": "idCommande", "type": "number" },
+        { "name": "idClient", "type": "number" },
+        { "name": "dateCommande", "type": "date" },
+        { "name": "dateLivraison", "type": "date" }
+      ],
+      "tuples": [
+        [101, 1, "2026-01-12", "2026-01-15"],
+        [102, 1, "2026-03-03", "2026-03-06"],
+        [103, 2, "2026-02-14", "2026-02-18"],
+        [104, 3, "2026-04-01", null],
+        [105, 4, "2026-05-20", "2026-05-23"],
+        [106, 5, "2026-06-02", "2026-06-05"],
+        [107, 5, "2026-09-08", null],
+        [108, 6, "2026-10-10", "2026-10-14"],
+        [109, 2, "2026-10-28", null]
+      ]
+    },
+    {
+      "name": "LigneCommande",
+      "attributes": [
+        { "name": "idCommande", "type": "number" },
+        { "name": "idProduit", "type": "number" },
+        { "name": "quantite", "type": "number" }
+      ],
+      "tuples": [
+        [101, 1, 10],
+        [101, 2, 25],
+        [101, 4, 1],
+        [102, 3, 12],
+        [102, 7, 2],
+        [103, 7, 5],
+        [103, 8, 3],
+        [104, 6, 2],
+        [104, 10, 2],
+        [105, 1, 2],
+        [105, 2, 2],
+        [106, 1, 30],
+        [106, 2, 30],
+        [106, 3, 30],
+        [107, 1, 15],
+        [107, 9, 4],
+        [108, 4, 3],
+        [108, 5, 3],
+        [108, 6, 3],
+        [109, 7, 4]
+      ]
+    }
+  ]
+}
