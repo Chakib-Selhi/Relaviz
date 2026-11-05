@@ -43,6 +43,15 @@ export const UI = {
   sqlOnlySql: 'Seulement dans SQLite',
   sqlFailed: (message) => `Impossible d’exécuter la requête avec SQLite : ${message}`,
   sqlUnavailable: 'Corrigez l’expression pour obtenir la requête SQL.',
+  exercise: 'Exercice',
+  freeMode: 'Expression libre',
+  check: 'Vérifier ma réponse',
+  showSolution: 'Afficher la solution',
+  correct: (n) => `Bonne réponse : votre expression donne les ${n} tuple(s) attendus.`,
+  wrong: (expected, found) =>
+    `Pas encore : le résultat attendu contient ${expected} tuple(s), le vôtre ${found}, ` +
+    'et ils ne sont pas tous identiques.',
+  notReady: 'Corrigez d’abord l’expression : elle doit s’exécuter sans erreur.',
 };
 
 /** Exemple affiché à l'ouverture de chaque base d'exemple. */

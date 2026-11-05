@@ -171,4 +171,39 @@ describe('interface', () => {
     fireEvent.change(editor(), { target: { value: '-- rien' } });
     expect(screen.getByText('Saisissez une expression pour afficher son arbre.')).toBeTruthy();
   });
+
+  it('propose un exercice, vérifie la réponse et affiche la solution', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.selectOptions(screen.getByLabelText('Exercice'), 'livres-recents');
+    expect(screen.getByText('Donnez le titre des livres publiés après 2020.')).toBeTruthy();
+    expect(window.location.hash).toContain('ex=livres-recents');
+
+    await user.click(screen.getByRole('button', { name: 'Vérifier ma réponse' }));
+    expect(screen.getByText(/Corrigez d’abord l’expression/)).toBeTruthy();
+
+    fireEvent.change(editor(), { target: { value: 'π[titre](Livre)' } });
+    await user.click(screen.getByRole('button', { name: 'Vérifier ma réponse' }));
+    expect(
+      screen.getByText(/Pas encore : le résultat attendu contient 4 tuple\(s\), le vôtre 13/),
+    ).toBeTruthy();
+
+    fireEvent.change(editor(), { target: { value: 'π[titre](σ[annee >= 2021](Livre))' } });
+    expect(screen.queryByText(/Pas encore/)).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Vérifier ma réponse' }));
+    expect(screen.getByText(/Bonne réponse/)).toBeTruthy();
+
+    await user.click(screen.getByRole('button', { name: 'Afficher la solution' }));
+    expect(editor().value).toBe('-- Livres récents\nπ[titre](σ[annee > 2020](Livre))');
+
+    await user.selectOptions(screen.getByLabelText('Exercice'), '');
+    expect(window.location.hash).not.toContain('ex=');
+  });
+
+  it('reprend l’exercice encodé dans l’adresse', () => {
+    window.location.hash = '#db=universite&ex=bonnes-notes&q=Etudiant';
+    render(<App />);
+    expect(screen.getByLabelText('Exercice').value).toBe('bonnes-notes');
+    expect(screen.getByText(/Pour chaque note de 85 ou plus/)).toBeTruthy();
+  });
 });

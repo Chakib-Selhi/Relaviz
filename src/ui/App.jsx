@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
+import { getExercises } from '../data/exercises.js';
 import { getSampleDatabase, sampleDatabases } from '../data/index.js';
 import { analyze, nodeLabel } from '../engine/index.js';
 import Editor from './components/Editor.jsx';
+import ExercisePanel from './components/ExercisePanel.jsx';
 import ResultTable from './components/ResultTable.jsx';
 import SchemaPanel from './components/SchemaPanel.jsx';
 import SqlPanel from './components/SqlPanel.jsx';
@@ -16,8 +18,10 @@ const DATABASE_IDS = sampleDatabases.map((db) => db.id);
 function initialState() {
   const fromUrl = readState(window.location.hash, DATABASE_IDS);
   const databaseId = fromUrl.databaseId ?? DATABASE_IDS[0];
+  const exercise = getExercises(databaseId).find((e) => e.id === fromUrl.exerciseId);
   return {
     databaseId,
+    exerciseId: exercise ? exercise.id : null,
     expression: fromUrl.expression ?? DEFAULT_EXPRESSIONS[databaseId] ?? '',
   };
 }
@@ -28,7 +32,8 @@ function initialState() {
  * @param {{ loadSql?: Parameters<typeof SqlPanel>[0]['loadSql'] }} props
  */
 export default function App({ loadSql }) {
-  const [{ databaseId, expression }, setState] = useState(initialState);
+  const [{ databaseId, exerciseId, expression }, setState] = useState(initialState);
+  const [checkedExpression, setCheckedExpression] = useState(/** @type {string | null} */ (null));
   const [selectedId, setSelectedId] = useState(/** @type {string | null} */ (null));
   const [hoveredId, setHoveredId] = useState(/** @type {string | null} */ (null));
   const [caret, setCaret] = useState(/** @type {number | null} */ (null));
@@ -42,8 +47,27 @@ export default function App({ loadSql }) {
 
   // Partage : l'URL suit la base et l'expression, sans ajouter d'entrée à l'historique.
   useEffect(() => {
-    window.history.replaceState(null, '', writeState(databaseId, expression));
-  }, [databaseId, expression]);
+    window.history.replaceState(null, '', writeState(databaseId, expression, exerciseId));
+  }, [databaseId, expression, exerciseId]);
+
+  // Exercices : la réponse est comparée au résultat de la solution, comme ensembles de tuples.
+  const exerciseList = getExercises(databaseId);
+  const exercise = exerciseList.find((e) => e.id === exerciseId) ?? null;
+  const solution = useMemo(
+    () => (exercise ? analyze(exercise.solution, database) : null),
+    [exercise, database],
+  );
+  const verdict = useMemo(() => {
+    if (!solution?.ok || !solution.result || checkedExpression !== expression) return null;
+    const expected = solution.result.tuples;
+    if (!analysis.ok || !analysis.result)
+      return { status: 'notReady', expected: expected.length, found: 0 };
+    const found = analysis.result.tuples;
+    const keys = new Set(expected.map((t) => JSON.stringify(t)));
+    const same =
+      found.length === expected.length && found.every((t) => keys.has(JSON.stringify(t)));
+    return { status: same ? 'correct' : 'wrong', expected: expected.length, found: found.length };
+  }, [solution, analysis, checkedExpression, expression]);
 
   const program = analysis.ok ? analysis.program : (analysis.program ?? null);
   const roots = useMemo(() => {
@@ -82,10 +106,30 @@ export default function App({ loadSql }) {
   function changeDatabase(/** @type {string} */ id) {
     setState((previous) => ({
       databaseId: id,
+      exerciseId: null,
       expression:
         previous.expression === DEFAULT_EXPRESSIONS[previous.databaseId]
           ? (DEFAULT_EXPRESSIONS[id] ?? '')
           : previous.expression,
+    }));
+    setSelectedId(null);
+  }
+
+  function chooseExercise(/** @type {string | null} */ id) {
+    const chosen = exerciseList.find((e) => e.id === id);
+    setState((previous) => ({
+      ...previous,
+      exerciseId: chosen ? chosen.id : null,
+      expression: chosen ? `-- ${chosen.title}\n-- ${chosen.statement}\n` : previous.expression,
+    }));
+    setSelectedId(null);
+  }
+
+  function showSolution() {
+    if (!exercise) return;
+    setState((previous) => ({
+      ...previous,
+      expression: `-- ${exercise.title}\n${exercise.solution}`,
     }));
     setSelectedId(null);
   }
@@ -131,6 +175,14 @@ export default function App({ loadSql }) {
 
         <section className="layout-main">
           <div className="panel">
+            <ExercisePanel
+              exercises={exerciseList}
+              exerciseId={exerciseId}
+              verdict={verdict}
+              onChoose={chooseExercise}
+              onCheck={() => setCheckedExpression(expression)}
+              onShowSolution={showSolution}
+            />
             <Editor
               value={expression}
               onChange={(value) => setState((s) => ({ ...s, expression: value }))}

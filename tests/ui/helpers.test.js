@@ -60,6 +60,14 @@ describe('partage par URL', () => {
     });
   });
 
+  it('encode l’exercice choisi', () => {
+    expect(readState(writeState('universite', 'R', 'bonnes-notes'), ids)).toEqual({
+      databaseId: 'universite',
+      exerciseId: 'bonnes-notes',
+      expression: 'R',
+    });
+  });
+
   it('ignore une base inconnue ou un fragment vide', () => {
     expect(readState('#db=inconnue&q=R', ids)).toEqual({ expression: 'R' });
     expect(readState('', ids)).toEqual({});
