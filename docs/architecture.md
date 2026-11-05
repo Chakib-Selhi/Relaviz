@@ -33,6 +33,7 @@ L'arbre produit par l'analyseur est la seule représentation partagée. L'évalu
 | `src/engine/index.js`          | texte + base              | `analyze` : analyse, vérification, trace    | 2     |
 | `src/engine/sql-translator.js` | arbre vérifié             | requête SQL lisible en CTE `WITH`           | 3     |
 | `src/engine/sql-oracle.js`     | base + requête SQL        | relation calculée par SQLite (sql.js)       | 3     |
+| `src/engine/sql-js.d.ts`       |                           | types minimaux de sql.js                    | 3     |
 | `src/data/`                    |                           | bases d'exemple et exercices                | 0, 5  |
 | `src/ui/`                      | moteur + données          | composants React                            | 4     |
 

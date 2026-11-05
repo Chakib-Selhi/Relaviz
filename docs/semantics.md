@@ -93,7 +93,26 @@ L'évaluateur parcourt l'arbre en ordre postfixe et produit, pour chaque nœud, 
 
 La clé d'un tuple est sa sérialisation JSON : elle distingue `1` de `'1'` et rend deux `NULL` égaux.
 
-## 8. Erreurs de schéma
+## 8. Traduction SQL
+
+Le traducteur (`src/engine/sql-translator.js`) écrit une CTE `WITH` par nœud non feuille, dans l'ordre postfixe : la requête se lit dans le même ordre que le mode pas à pas. Chaque CTE nomme ses colonnes dans son en-tête (`n3(titre, nom) AS (...)`) ; un nom présent deux fois y est écrit avec sa source (`"Livre.idAuteur"`), comme dans l'interface.
+
+| Opérateur    | Traduction                                                                                     |
+| ------------ | ---------------------------------------------------------------------------------------------- |
+| `σ[c](E)`    | `SELECT DISTINCT * FROM E WHERE c`                                                             |
+| `π[a, b](E)` | `SELECT DISTINCT a, b FROM E`                                                                  |
+| `ρ`          | `SELECT DISTINCT * FROM E`, les nouveaux noms étant dans l'en-tête de la CTE                   |
+| `×`          | `SELECT DISTINCT l.*, r.* FROM E AS l CROSS JOIN F AS r`                                       |
+| `⋈[c]`       | `SELECT DISTINCT l.*, r.* FROM E AS l JOIN F AS r ON c`                                        |
+| `⋈`          | `JOIN ... ON l.x = r.x AND ...` sur les attributs communs (`=` n'est jamais vrai pour NULL)    |
+| `∪ − ∩`      | `UNION`, `EXCEPT`, `INTERSECT` (qui considèrent deux NULL égaux, comme le moteur)              |
+| `÷`          | double `NOT EXISTS`, avec `IS` (égalité qui considère deux NULL égaux) pour rester fidèle à S4 |
+
+`NATURAL JOIN` n'est pas utilisé : les colonnes qualifiées d'une CTE empêcheraient SQLite de reconnaître les attributs communs. Les tables de la base sont créées sans type déclaré, pour que SQLite conserve exactement les valeurs du moteur.
+
+**Vérification (EF-10).** `src/engine/sql-oracle.js` exécute la requête avec sql.js et compare les deux résultats comme ensembles de tuples. Les tests exécutent chaque expression de la suite, et chacune de ses étapes intermédiaires, par les deux chemins.
+
+## 9. Erreurs de schéma
 
 | Situation                                               | Code                              |
 | ------------------------------------------------------- | --------------------------------- |
