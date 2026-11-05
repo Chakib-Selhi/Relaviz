@@ -93,7 +93,7 @@ export default function Editor({
           spellCheck={false}
           autoCapitalize="off"
           autoComplete="off"
-          rows={5}
+          rows={Math.max(5, value.split('\n').length + 2)}
           aria-describedby={describedBy}
           aria-invalid={errorSpan ? true : undefined}
           onChange={(event) => {
