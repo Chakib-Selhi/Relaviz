@@ -2,21 +2,26 @@
  * Point d'entrée public du moteur. L'interface n'appelle que `analyze`, qui enchaîne les trois
  * étapes et ne lève jamais d'exception pour une saisie invalide.
  *
- *   texte ─ parse ─▶ programme ─ checkProgram ─▶ schémas ─ evaluate ─▶ trace
+ *   texte ─ parse ─▶ programme ─ checkProgram ─▶ schémas ─┬─ evaluate ─▶ trace
+ *                                                          └─ translateProgram ─▶ SQL
  */
 
 /** @import { Attribute, Node, Program, Relation, TraceStep } from './types.js' */
 /** @import { ErrorInfo } from './errors.js' */
 /** @import { Database } from './schema-checker.js' */
+/** @import { SqlTranslation } from './sql-translator.js' */
 import { RelaVizError, toErrorInfo } from './errors.js';
 import { evaluate } from './evaluator.js';
 import { parse } from './parser.js';
 import { checkProgram } from './schema-checker.js';
+import { translateProgram } from './sql-translator.js';
 
 export { parse } from './parser.js';
 export { formatCondition, formatNode, nodeLabel } from './format.js';
 export { childrenOf } from './evaluator.js';
 export { displayNames } from './schema-checker.js';
+export { queryForStep, quoteIdentifier, translateProgram } from './sql-translator.js';
+export { compareResults, loadSqlJs, verifyWithSql } from './sql-oracle.js';
 
 /**
  * @typedef {object} Analysis
@@ -28,6 +33,7 @@ export { displayNames } from './schema-checker.js';
  * @property {Map<string, Relation>} results relation de chaque nœud
  * @property {Node | null} root nœud du résultat affiché
  * @property {Relation | null} result relation du résultat affiché
+ * @property {SqlTranslation | null} sql requête SQL équivalente (`null` pour un programme vide)
  */
 
 /**
@@ -68,5 +74,6 @@ export function analyze(text, database) {
     results,
     root,
     result: root ? (results.get(root.id) ?? null) : null,
+    sql: translateProgram(parsed.program, checked.schemas),
   };
 }
