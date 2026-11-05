@@ -2,12 +2,13 @@
 
 Application web pédagogique qui exécute une expression d'algèbre relationnelle, l'affiche sous forme d'arbre d'opérations, montre la table intermédiaire produite à chaque étape et donne la requête SQL équivalente, vérifiée avec SQLite dans le navigateur.
 
-> **État : phase 1 terminée (analyseur).** L'analyseur lexical et l'analyseur syntaxique transforment une expression en arbre, avec des erreurs positionnées en français. Prochaine étape : vérification du schéma et évaluation (phase 2).
+> **État : phase 2 terminée (vérification et évaluation).** Le moteur analyse une expression, vérifie les noms et les types, puis calcule la table de chaque étape. Prochaine étape : traduction SQL vérifiée avec sql.js (phase 3).
 
 ## Documentation
 
 - [PRD](docs/PRD.md) : objectifs, exigences et jalons
 - [Grammaire](docs/grammar.md) : syntaxe des expressions en EBNF, priorités, erreurs
+- [Sémantique](docs/semantics.md) : schéma de chaque opérateur, NULL, types, erreurs de schéma
 - [Architecture](docs/architecture.md) : pipeline du moteur, règles de dépendance, tests
 
 ## Lancer le projet

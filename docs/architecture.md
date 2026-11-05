@@ -1,6 +1,6 @@
 # Architecture de RelaViz
 
-RelaViz est une application entièrement côté client. Le code se divise en deux parties indépendantes : un **moteur** en JavaScript pur, qui analyse, vérifie, évalue et traduit les expressions, et une **interface** React qui l'affiche. Ce document décrit le découpage, les règles de dépendance et la stratégie de test. Les exigences sont dans le [PRD](PRD.md) et le langage d'entrée dans la [grammaire](grammar.md).
+RelaViz est une application entièrement côté client. Le code se divise en deux parties indépendantes : un **moteur** en JavaScript pur, qui analyse, vérifie, évalue et traduit les expressions, et une **interface** React qui l'affiche. Ce document décrit le découpage, les règles de dépendance et la stratégie de test. Les exigences sont dans le [PRD](PRD.md), le langage d'entrée dans la [grammaire](grammar.md) et le sens de chaque opérateur dans la [sémantique](semantics.md).
 
 ## Pipeline du moteur
 
@@ -30,6 +30,7 @@ L'arbre produit par l'analyseur est la seule représentation partagée. L'évalu
 | `src/engine/format.js`         | arbre ou condition        | étiquettes et notation compacte de l'arbre  | 1     |
 | `src/engine/schema-checker.js` | arbre + schéma de la base | schéma de sortie de chaque nœud, ou erreurs | 2     |
 | `src/engine/evaluator.js`      | arbre vérifié + base      | trace : une relation par nœud (`TraceStep`) | 2     |
+| `src/engine/index.js`          | texte + base              | `analyze` : analyse, vérification, trace    | 2     |
 | `src/engine/sql-translator.js` | arbre vérifié             | requête SQL lisible en CTE `WITH`           | 3     |
 | `src/engine/sql-oracle.js`     | base + requête SQL        | relation calculée par SQLite (sql.js)       | 3     |
 | `src/data/`                    |                           | bases d'exemple et exercices                | 0, 5  |
