@@ -46,5 +46,11 @@
   "engines": {
     "node": ">=22.12"
   },
-  "author": "Chakib Selhi <chakibselhi@gmail.com>"
+  "author": "Chakib Selhi <chakibselhi@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://chakib-selhi.github.io/Relaviz/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chakib-Selhi/Relaviz.git"
+  }
 }
