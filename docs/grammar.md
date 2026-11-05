@@ -285,19 +285,27 @@ Une référence à un résultat nommé (`Recents`) est un nœud `{ kind: 'relati
 
 L'analyse s'arrête à la **première erreur** (pas de reprise sur erreur au MVP). Comme l'expression est réanalysée à chaque modification, l'utilisateur corrige les erreurs une par une. Chaque erreur porte un message en français, une ligne et une colonne (à partir de 1) et un `span` pour le soulignement (EF-04).
 
-| Situation                     | Message (exemple)                                                            |
-| ----------------------------- | ---------------------------------------------------------------------------- |
-| caractère inconnu             | `Caractère inattendu « @ ».`                                                 |
-| chaîne non fermée             | `Chaîne non terminée : il manque l'apostrophe fermante.`                     |
-| guillemets                    | `Les chaînes s'écrivent entre apostrophes : 'Roman' et non "Roman".`         |
-| opérateur V1.1                | `L'opérateur « ⟕ » sera disponible dans une version ultérieure.`             |
-| crochet manquant              | `« ] » attendu pour fermer la condition de σ, trouvé « ( ».`                 |
-| opérande manquant             | `Expression attendue après « ∪ ».`                                           |
-| deux opérandes juxtaposés     | `Opérateur attendu entre « Livre » et « Auteur ».`                           |
-| mot réservé utilisé comme nom | `« union » est un mot réservé et ne peut pas servir de nom.`                 |
-| comparaison enchaînée         | `Une comparaison ne s'enchaîne pas : utilisez and.`                          |
-| `= null`                      | `Utilisez « annee is null » : une comparaison avec null n'est jamais vraie.` |
-| fin inattendue                | `Fin de l'expression inattendue : « ) » attendu.`                            |
+Chaque erreur a un code stable. Les messages sont centralisés dans `MESSAGES_FR` (`src/engine/errors.js`), pour qu'une traduction n'ait qu'un catalogue à remplacer.
+
+| Situation                       | Code                             | Message (exemple)                                                                    |
+| ------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------ |
+| caractère inconnu               | `UNEXPECTED_CHARACTER`           | `Caractère inattendu « @ ».`                                                         |
+| `:` ou `!` isolé                | `LONE_COLON`, `LONE_EXCLAMATION` | `« : » seul n’est pas reconnu : écrivez « := » pour une affectation.`                |
+| chaîne non fermée               | `UNTERMINATED_STRING`            | `Chaîne non terminée : il manque l’apostrophe fermante.`                             |
+| guillemets                      | `DOUBLE_QUOTED_STRING`           | `Les chaînes s’écrivent entre apostrophes : 'Roman' et non "Roman".`                 |
+| nombre mal formé                | `MALFORMED_NUMBER`               | `Nombre mal formé « 2020abc ».`                                                      |
+| opérateur V1.1                  | `FUTURE_OPERATOR`                | `L’opérateur « ⟕ » sera disponible dans une version ultérieure.`                     |
+| jeton manquant                  | `EXPECTED_TOKEN`                 | `« ] » attendu pour fermer la condition de σ, trouvé « ( ».`                         |
+| fin inattendue                  | `UNEXPECTED_END`                 | `Fin de l’expression inattendue : « ) » attendu pour fermer la parenthèse ouverte.`  |
+| opérande manquant               | `EXPECTED_EXPRESSION`            | `Expression attendue après « union ».`                                               |
+| deux opérandes juxtaposés       | `MISSING_OPERATOR`               | `Opérateur attendu entre « Livre » et « Auteur ».`                                   |
+| jeton en trop                   | `UNEXPECTED_TOKEN`               | `« ) » inattendu.`                                                                   |
+| mot réservé utilisé comme nom   | `RESERVED_WORD`                  | `« union » est un mot réservé et ne peut pas servir de nom.`                         |
+| comparaison enchaînée           | `CHAINED_COMPARISON`             | `Une comparaison ne s’enchaîne pas : utilisez and, par exemple « a > 1 and a < 5 ».` |
+| `= null`                        | `NULL_COMPARISON`                | `Utilisez « annee is null » : une comparaison avec null n’est jamais vraie.`         |
+| nom de relation qualifié dans ρ | `QUALIFIED_RELATION_NAME`        | `Le nouveau nom de relation « Livre.t » ne peut pas être qualifié. (...)`            |
+| attribut renommé deux fois      | `DUPLICATE_RENAME`               | `L’attribut « a » est renommé deux fois.`                                            |
+| affectation après le résultat   | `ASSIGNMENT_AFTER_RESULT`        | `L’affectation « T » doit précéder l’expression finale : (...)`                      |
 
 Les erreurs de **schéma** (relation ou attribut inconnu, ambiguïté, relations incompatibles pour `∪ − ∩`, schéma invalide pour `÷`, nom d'affectation déjà utilisé, arité d'un renommage positionnel) ne relèvent pas de la grammaire : elles sont détectées par le vérificateur (phase 2, EF-05).
 
@@ -319,7 +327,7 @@ Chaque point complète ou précise le PRD. Toutes ces décisions ont été valid
 
 ## 8. Cas de test de référence
 
-Ces cas deviendront les premiers tests de l'analyseur (`tests/engine/parser.test.js`). La colonne « Arbre » utilise une notation préfixée compacte.
+Ces cas sont vérifiés par `tests/engine/parser.test.js`. La colonne « Arbre » utilise la notation préfixée compacte de `formatNode` (`src/engine/format.js`).
 
 | #   | Entrée                                                | Arbre attendu                                        |
 | --- | ----------------------------------------------------- | ---------------------------------------------------- |
@@ -347,7 +355,7 @@ Ces cas deviendront les premiers tests de l'analyseur (`tests/engine/parser.test
 | 22  | `σ[annee is not null](Livre)`                         | condition `annee is not null`                        |
 | 23  | `R := σ[a = 1](S)` puis `R ∪ T` sur la ligne suivante | affectation `R`, résultat `∪(R, T)`                  |
 | 24  | `-- seulement un commentaire`                         | programme vide                                       |
-| 25  | `X := R union S` (sans expression finale)             | résultat : l'affectation `X`                         |
+| 25  | `Tous := R union S` (sans expression finale)          | résultat : l'affectation `Tous`                      |
 
 Cas d'erreur, avec la position attendue (ligne:colonne) :
 
