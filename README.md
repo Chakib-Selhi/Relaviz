@@ -2,7 +2,7 @@
 
 Application web pédagogique qui exécute une expression d'algèbre relationnelle, l'affiche sous forme d'arbre d'opérations, montre la table intermédiaire produite à chaque étape et donne la requête SQL équivalente, vérifiée avec SQLite dans le navigateur.
 
-> **État : phase 0 (fondations).** Outillage, intégration continue, bases d'exemple et proposition de grammaire. L'analyseur arrive en phase 1.
+> **État : phase 1 terminée (analyseur).** L'analyseur lexical et l'analyseur syntaxique transforment une expression en arbre, avec des erreurs positionnées en français. Prochaine étape : vérification du schéma et évaluation (phase 2).
 
 ## Documentation
 

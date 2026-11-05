@@ -24,8 +24,10 @@ L'arbre produit par l'analyseur est la seule représentation partagée. L'évalu
 | Module                         | Entrée                    | Sortie                                      | Phase |
 | ------------------------------ | ------------------------- | ------------------------------------------- | ----- |
 | `src/engine/types.js`          |                           | types JSDoc du modèle de données            | 0     |
+| `src/engine/errors.js`         | code + position           | erreur positionnée, messages en français    | 1     |
 | `src/engine/lexer.js`          | texte                     | jetons positionnés, ou erreur lexicale      | 1     |
-| `src/engine/parser.js`         | jetons                    | programme (affectations + arbre), ou erreur | 1     |
+| `src/engine/parser.js`         | texte                     | programme (affectations + arbre), ou erreur | 1     |
+| `src/engine/format.js`         | arbre ou condition        | étiquettes et notation compacte de l'arbre  | 1     |
 | `src/engine/schema-checker.js` | arbre + schéma de la base | schéma de sortie de chaque nœud, ou erreurs | 2     |
 | `src/engine/evaluator.js`      | arbre vérifié + base      | trace : une relation par nœud (`TraceStep`) | 2     |
 | `src/engine/sql-translator.js` | arbre vérifié             | requête SQL lisible en CTE `WITH`           | 3     |
@@ -33,7 +35,9 @@ L'arbre produit par l'analyseur est la seule représentation partagée. L'évalu
 | `src/data/`                    |                           | bases d'exemple et exercices                | 0, 5  |
 | `src/ui/`                      | moteur + données          | composants React                            | 4     |
 
-Chaque étape du moteur est une fonction pure : même entrée, même sortie, sans état global. Les erreurs sont retournées comme des valeurs (message, ligne, colonne, `span`) plutôt que levées jusqu'à l'interface, pour que l'éditeur puisse les afficher à chaque frappe.
+Chaque étape du moteur est une fonction pure : même entrée, même sortie, sans état global. À l'intérieur du moteur, une erreur est une `RelaVizError` levée au point où elle est détectée ; les fonctions publiques (`parse`, puis celles des phases suivantes) la retournent comme une valeur (`ErrorInfo` : code, message, ligne, colonne, `span`). L'interface n'a donc jamais d'exception à intercepter et peut afficher l'erreur à chaque frappe.
+
+`errors.js` et `format.js` complètent les six modules du PRD : le premier partage le type d'erreur et le catalogue de messages entre tous les modules, le second sert aux tests, aux messages et aux étiquettes de l'arbre dans l'interface.
 
 ## Règles de dépendance
 
@@ -67,7 +71,7 @@ relaviz/
 └── tests/                     tests Vitest, même découpage que src/
 ```
 
-Les tests sont regroupés dans `tests/` plutôt qu'à côté des sources, pour que `src/engine` ne contienne que les six modules prévus par le PRD et que la couverture se mesure sans filtre supplémentaire.
+Les tests sont regroupés dans `tests/` plutôt qu'à côté des sources, pour que `src/engine` ne contienne que le code du moteur et que la couverture se mesure sans filtre supplémentaire.
 
 ## Stratégie de test
 
