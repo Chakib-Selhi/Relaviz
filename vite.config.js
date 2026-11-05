@@ -3,6 +3,9 @@ import { defineConfig } from 'vitest/config';
 
 // https://vite.dev/config/ et https://vitest.dev/config/
 export default defineConfig({
+  // Chemins relatifs : le site fonctionne sous https://<compte>.github.io/<dépôt>/ quel que soit
+  // le nom du dépôt, puisque l'application n'utilise que le fragment de l'URL.
+  base: './',
   plugins: [react()],
   test: {
     // Le moteur ne dépend pas du DOM : les tests tournent sous Node. Les tests de l'interface
