@@ -1,6 +1,6 @@
 # Grammaire de RelaViz
 
-> **Statut : proposition à valider (phase 0).** Les choix marqués **D1 à D9** dans la section 7 attendent une validation avant l'écriture de l'analyseur. Une fois validés, ce document devient la référence des tests de l'analyseur (phase 1).
+> **Statut : validée le 5 novembre 2026.** Les décisions **D1 à D9** de la section 7 ont été acceptées. Ce document est la référence de l'analyseur et de ses tests.
 
 Ce document définit le langage d'entrée de RelaViz : une expression d'algèbre relationnelle, éventuellement précédée d'affectations nommées. Il décrit successivement le lexique (les jetons), la syntaxe (en EBNF), les priorités, la correspondance avec l'arbre syntaxique du PRD et les messages d'erreur.
 
@@ -12,7 +12,7 @@ Ce document définit le langage d'entrée de RelaViz : une expression d'algèbre
 4. [Priorités et associativité](#4-priorités-et-associativité)
 5. [Correspondance avec l'arbre syntaxique](#5-correspondance-avec-larbre-syntaxique)
 6. [Erreurs](#6-erreurs)
-7. [Décisions à valider](#7-décisions-à-valider)
+7. [Décisions de conception](#7-décisions-de-conception)
 8. [Cas de test de référence](#8-cas-de-test-de-référence)
 9. [Pourquoi une descente récursive](#9-pourquoi-une-descente-récursive)
 
@@ -218,7 +218,7 @@ Du plus fort au plus faible :
 | 3      | `∩`                    | à gauche      | `intersect_expr` |
 | 4      | `∪` `−`                | à gauche      | `union_expr`     |
 
-Les niveaux 2 à 4 reprennent le PRD ; la place de `÷` au niveau 2 est une proposition (voir D1). Les parenthèses priment toujours.
+Les niveaux 2 à 4 reprennent le PRD ; la place de `÷` au niveau 2 découle de la décision D1. Les parenthèses priment toujours.
 
 | Expression    | Lecture         |
 | ------------- | --------------- |
@@ -253,7 +253,7 @@ L'arbre suit les types du PRD, définis en JSDoc dans `src/engine/types.js`.
 | `primary = IDENT`             | `{ kind: 'relation', name }`                                       |
 | `SELECT [c] e`                | `{ kind: 'select', condition, child }`                             |
 | `PROJECT [l] e`               | `{ kind: 'project', attributes, child }`                           |
-| `RENAME [s] e`                | `{ kind: 'rename', mapping, newName?, child }` (voir D6)           |
+| `RENAME [s] e`                | `{ kind: 'rename', mapping, newName?, positional?, child }` (D6)   |
 | `e PRODUCT e`                 | `{ kind: 'product', left, right }`                                 |
 | `e JOIN e`                    | `{ kind: 'naturalJoin', left, right }`                             |
 | `e JOIN [c] e`                | `{ kind: 'thetaJoin', condition, left, right }`                    |
@@ -272,7 +272,7 @@ Règles complémentaires :
 - **Projection.** Le PRD type `attributes` comme `string[]` : une référence qualifiée y est conservée telle quelle (`'Livre.titre'`) et résolue par le vérificateur de schéma.
 - **Positions.** `span` contient les indices de début (inclus) et de fin (exclus) dans le texte saisi. Ligne et colonne sont calculées à partir de l'indice pour les messages d'erreur.
 - **Identifiants de nœuds.** Les `id` sont attribués à la création (`n1`, `n2`...). Comme une descente récursive crée les enfants avant le parent, cet ordre est l'ordre postfixe, celui du mode pas à pas (EF-08).
-- **Affectations.** Le PRD ne type pas le programme. Proposition (voir D7) :
+- **Affectations.** Le PRD ne type pas le programme. Types retenus (D7), définis dans `src/engine/types.js` :
 
 ```javascript
 /** @typedef {{ name: string, expression: Node, span: { start: number, end: number } }} Assignment */
@@ -301,11 +301,11 @@ L'analyse s'arrête à la **première erreur** (pas de reprise sur erreur au MVP
 
 Les erreurs de **schéma** (relation ou attribut inconnu, ambiguïté, relations incompatibles pour `∪ − ∩`, schéma invalide pour `÷`, nom d'affectation déjà utilisé, arité d'un renommage positionnel) ne relèvent pas de la grammaire : elles sont détectées par le vérificateur (phase 2, EF-05).
 
-## 7. Décisions à valider
+## 7. Décisions de conception
 
-Chaque point complète ou précise le PRD. La proposition est indiquée en gras.
+Chaque point complète ou précise le PRD. Toutes ces décisions ont été validées le 5 novembre 2026.
 
-| ID  | Question                                            | Proposition                                                                                                      | Raison                                                                                                               |
+| ID  | Question                                            | Décision                                                                                                         | Raison                                                                                                               |
 | --- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | D1  | Priorité de `÷` (absente du PRD)                    | **Même niveau que `×` et `⋈`**, associativité à gauche                                                           | `÷` est un opérateur « multiplicatif », comme dans la plupart des manuels.                                           |
 | D2  | Parenthèses autour de l'opérande de `σ π ρ`         | **Facultatives** : `σ[c] R` et `σ[c](R)` sont valides                                                            | Notation des manuels (`π σ R`) ; l'arbre affiché rend visible la portée réelle de l'opérateur.                       |
