@@ -14,7 +14,12 @@
  *   'DOUBLE_QUOTED_STRING' | 'MALFORMED_NUMBER' | 'FUTURE_OPERATOR' |
  *   'EXPECTED_TOKEN' | 'UNEXPECTED_END' | 'EXPECTED_EXPRESSION' | 'MISSING_OPERATOR' |
  *   'UNEXPECTED_TOKEN' | 'RESERVED_WORD' | 'CHAINED_COMPARISON' | 'NULL_COMPARISON' |
- *   'QUALIFIED_RELATION_NAME' | 'DUPLICATE_RENAME' | 'ASSIGNMENT_AFTER_RESULT'
+ *   'QUALIFIED_RELATION_NAME' | 'DUPLICATE_RENAME' | 'ASSIGNMENT_AFTER_RESULT' |
+ *   'UNKNOWN_RELATION' | 'USED_BEFORE_DEFINITION' | 'ASSIGNMENT_SHADOWS_RELATION' |
+ *   'DUPLICATE_ASSIGNMENT' | 'UNKNOWN_ATTRIBUTE' | 'UNKNOWN_QUALIFIER' | 'AMBIGUOUS_ATTRIBUTE' |
+ *   'DUPLICATE_ATTRIBUTE' | 'RENAME_ARITY' | 'TYPE_MISMATCH' | 'INVALID_DATE' |
+ *   'INCOMPATIBLE_ARITY' | 'INCOMPATIBLE_TYPES' | 'COMMON_ATTRIBUTE_TYPE_MISMATCH' |
+ *   'DIVISION_MISSING_ATTRIBUTE' | 'DIVISION_NO_REMAINING_ATTRIBUTE' | 'NATURAL_JOIN_AS_PRODUCT'
  * )} ErrorCode
  */
 
@@ -67,9 +72,50 @@ export const MESSAGES_FR = {
   ASSIGNMENT_AFTER_RESULT: ({ name }) =>
     `L’affectation « ${name} » doit précéder l’expression finale : ` +
     'seule la dernière instruction peut être une expression sans nom.',
+
+  // Erreurs de schéma (docs/semantics.md). `hint` est une phrase facultative, déjà ponctuée.
+  UNKNOWN_RELATION: ({ name, hint }) => `Relation inconnue « ${name} ».${withContext(hint)}`,
+  USED_BEFORE_DEFINITION: ({ name }) =>
+    `« ${name} » est utilisé avant d’être défini : placez son affectation plus haut.`,
+  ASSIGNMENT_SHADOWS_RELATION: ({ name }) =>
+    `« ${name} » est déjà une relation de la base : choisissez un autre nom d’affectation.`,
+  DUPLICATE_ASSIGNMENT: ({ name }) =>
+    `« ${name} » est déjà défini plus haut : une affectation ne peut pas être redéfinie.`,
+  UNKNOWN_ATTRIBUTE: ({ name, available, hint }) =>
+    `Attribut inconnu « ${name} ». Attributs disponibles : ${available}.${withContext(hint)}`,
+  UNKNOWN_QUALIFIER: ({ name, qualifier, available }) =>
+    `« ${qualifier} » ne désigne aucune relation ici, donc « ${name} » est introuvable. ` +
+    `Relations disponibles : ${available}.`,
+  AMBIGUOUS_ATTRIBUTE: ({ name, candidates }) =>
+    `Attribut ambigu « ${name} » : précisez ${candidates}.`,
+  DUPLICATE_ATTRIBUTE: ({ attribute, hint }) =>
+    `Le résultat contiendrait deux fois l’attribut « ${attribute} ».${withContext(hint)}`,
+  RENAME_ARITY: ({ expected, found }) =>
+    `Le renommage donne ${found} nom(s), mais la relation a ${expected} attribut(s).`,
+  TYPE_MISMATCH: ({ left, leftType, right, rightType }) =>
+    `Comparaison impossible entre « ${left} » (${leftType}) et « ${right} » (${rightType}).`,
+  INVALID_DATE: ({ value }) =>
+    `« ${value} » n’est pas une date valide : utilisez le format 'AAAA-MM-JJ'.`,
+  INCOMPATIBLE_ARITY: ({ operator, left, right }) =>
+    `Les opérandes de ${operator} doivent avoir le même nombre d’attributs : ${left} à gauche, ${right} à droite.`,
+  INCOMPATIBLE_TYPES: ({ operator, position, left, right }) =>
+    `Les opérandes de ${operator} sont incompatibles en position ${position} : « ${left} » et « ${right} » n’ont pas le même type.`,
+  COMMON_ATTRIBUTE_TYPE_MISMATCH: ({ operator, name, left, right }) =>
+    `${operator} : l’attribut commun « ${name} » est de type ${left} à gauche et ${right} à droite.`,
+  DIVISION_MISSING_ATTRIBUTE: ({ name }) =>
+    `Division impossible : l’attribut « ${name} » du diviseur n’existe pas dans le dividende.`,
+  DIVISION_NO_REMAINING_ATTRIBUTE: () =>
+    'Division impossible : le dividende doit avoir au moins un attribut absent du diviseur.',
+
+  // Avertissements (non bloquants)
+  NATURAL_JOIN_AS_PRODUCT: () =>
+    'Aucun attribut commun : cette jointure naturelle équivaut à un produit cartésien (×).',
 };
 
-/** Erreur levée par le lexer, l'analyseur et, plus tard, le vérificateur de schéma. */
+/**
+ * Erreur levée par le lexer, l'analyseur et le vérificateur de schéma. Le vérificateur utilise
+ * aussi cette classe, sans la lever, pour ses avertissements.
+ */
 export class RelaVizError extends Error {
   /**
    * @param {ErrorCode} code

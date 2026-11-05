@@ -60,11 +60,21 @@ describe('catalogue des messages', () => {
       suggestion: 'annee is null',
       name: 'L',
       attribute: 'titre',
+      hint: 'Vouliez-vous dire « Livre » ?',
+      available: 'titre, annee',
+      qualifier: 'Livr',
+      candidates: '« Livre.id » ou « Auteur.id »',
+      leftType: 'nombre',
+      rightType: 'texte',
+      left: '1',
+      right: '2',
+      position: '1',
+      value: '2025-13-01',
     };
     for (const [code, build] of Object.entries(MESSAGES_FR)) {
       const message = build(params);
       expect(message.length, code).toBeGreaterThan(10);
-      expect(message.endsWith('.'), code).toBe(true);
+      expect(message, code).toMatch(/[.?]$/);
     }
   });
 
