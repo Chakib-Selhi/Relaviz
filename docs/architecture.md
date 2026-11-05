@@ -41,6 +41,27 @@ Chaque étape du moteur est une fonction pure : même entrée, même sortie, san
 
 `errors.js` et `format.js` complètent les six modules du PRD : le premier partage le type d'erreur et le catalogue de messages entre tous les modules, le second sert aux tests, aux messages et aux étiquettes de l'arbre dans l'interface.
 
+## Interface
+
+| Fichier                             | Rôle                                                                                   |
+| ----------------------------------- | -------------------------------------------------------------------------------------- |
+| `src/ui/App.jsx`                    | état (base, expression, nœud choisi), appel de `analyze` à chaque frappe, mise en page |
+| `src/ui/components/Editor.jsx`      | zone de texte posée sur une copie surlignée (erreur, nœud survolé), raccourcis clavier |
+| `src/ui/components/SymbolBar.jsx`   | barre de symboles σ π ρ × ⋈ ∪ − ∩ ÷                                                    |
+| `src/ui/components/TreeView.jsx`    | arbre SVG, sélection à la souris ou au clavier (flèches)                               |
+| `src/ui/components/ResultTable.jsx` | table d'une étape, avec légende et en-têtes pour les lecteurs d'écran                  |
+| `src/ui/components/SqlPanel.jsx`    | requête SQL et vérification avec sql.js, chargé à l'ouverture de l'onglet              |
+| `src/ui/components/SchemaPanel.jsx` | relations, attributs, types et nombre de tuples                                        |
+| `src/ui/tree-layout.js`             | placement des nœuds de l'arbre                                                         |
+| `src/ui/url-state.js`               | base et expression encodées dans le fragment de l'URL                                  |
+| `src/ui/messages.fr.js`             | tous les textes de l'interface                                                         |
+
+**Arbre en SVG fait maison.** Un arbre de requête compte rarement plus d'une trentaine de nœuds. Un placement simple suffit : les feuilles occupent des colonnes successives, chaque parent est centré au-dessus de ses enfants, et deux sous-arbres ne partagent jamais de colonne, donc aucun nœud ne se chevauche. Ce placement tient en une soixantaine de lignes testées, alors qu'une bibliothèque comme d3-hierarchy ajouterait une dépendance pour un gain faible. Le SVG est rendu par React : chaque nœud est un élément accessible au clavier.
+
+**Lien entre le texte et l'arbre.** Chaque nœud connaît sa position dans le texte (`span`). Survoler un nœud surligne sa partie de l'expression ; placer le curseur dans l'expression met en évidence le plus petit nœud qui le contient.
+
+**Chargement différé de sql.js.** Le moteur importe sql.js avec `import()` : Vite le place dans un fichier séparé, téléchargé seulement à l'ouverture de l'onglet SQL, avec son fichier WebAssembly (environ 340 ko compressés).
+
 ## Règles de dépendance
 
 ```mermaid

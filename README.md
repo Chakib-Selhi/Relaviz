@@ -2,7 +2,7 @@
 
 Application web pédagogique qui exécute une expression d'algèbre relationnelle, l'affiche sous forme d'arbre d'opérations, montre la table intermédiaire produite à chaque étape et donne la requête SQL équivalente, vérifiée avec SQLite dans le navigateur.
 
-> **État : phase 3 terminée (SQL vérifié).** Le moteur analyse, vérifie et évalue une expression, la traduit en SQL et confirme avec SQLite (sql.js) que les deux résultats sont identiques. Prochaine étape : l'interface (phase 4).
+> **État : phase 4 terminée (interface).** L'application est utilisable : éditeur avec barre de symboles, arbre interactif, table de chaque étape, mode pas à pas, onglet SQL vérifié et partage par URL. Prochaine étape : mise en ligne, exercices préchargés et README complet (phase 5).
 
 ## Documentation
 
